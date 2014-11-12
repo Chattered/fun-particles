@@ -7,7 +7,9 @@ import Graphics.Gloss.Data.ViewPort (ViewPort)
 import Particle
 
 initParticles :: [Particle Float]
-initParticles = [particle (50,150) (500,0) 10]
+initParticles = [particle (50,150) (500,0) 10,
+                 particle (50,125) (300,-200) 10
+                ]
 
 initBarriers :: [LineSegment Float]
 initBarriers = [lineSegment (-200,-200) (0,50)

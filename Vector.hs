@@ -27,11 +27,11 @@ norm v = v `dot` v
 magnitude :: Floating a => (a,a) -> a
 magnitude v = sqrt (norm v)
 
-project :: Floating a => (a,a) -> (a,a) -> a
-project u v = (u `dot` v) / magnitude u
+project :: Floating a => (a,a) -> (a,a) -> (a,a)
+project u v = ((u `dot` v) / magnitude u) *. u
 
-projectUnit :: Num a => UnitV a -> (a,a) -> a
-projectUnit (UnitV u) v = u `dot` v
+projectUnit :: Num a => UnitV a -> (a,a) -> (a,a)
+projectUnit (UnitV u) v = (u `dot` v) *. u
 
 normalise :: Floating a => (a,a) -> UnitV a
 normalise v = UnitV (v /. magnitude v)
