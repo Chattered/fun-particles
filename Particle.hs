@@ -31,20 +31,23 @@ moveParticle dt p = p { position = position p +. (dt *. velocity p) }
 segEnd :: Num a => LineSegment a -> (a,a)
 segEnd seg = segStart seg +. segDir seg
 
--- Find the point on a line-segment ab closest to a given point
-nearestPointLS :: (Ord a, Fractional a) => (a,a) -> LineSegment a -> (a,a)
-nearestPointLS p seg =
-  let dir         = segDir seg
-      a           = segStart seg
-      b           = segEnd seg
-      numerator   = (p -. a) `dot` dir
-      denominator = norm dir
-      u           = numerator / denominator
-  in if 0 <= u && u <= 1 then (u *. dir) +. a else if u < 0 then a else b
+-- Find the square of the distance of a point to line segment
+squareDistanceLS :: (Ord a, Fractional a) => (a,a) -> LineSegment a -> a
+squareDistanceLS p seg =
+  let dirUnit   = segDirUnit seg
+      (dx,dy)   = segDir seg
+      a         = segStart seg
+      q         = p -. a
+      r@(rx,ry) = projectUnit dirUnit q
+  in if    dx < 0 && 0 >= rx && rx >= dx
+        || dx > 0 && 0 <= rx && rx <= dx
+        || dy < 0 && 0 >= ry && ry >= dy
+        || dy > 0 && 0 <= ry && ry <= dy
+     then norm (q -. r) else if rx < 0 then norm (p -. a) else norm (p -. segEnd seg)
 
 particleHitsLS :: (Ord a, Fractional a) => Particle a -> LineSegment a -> Bool
 particleHitsLS p seg =
-  norm (nearestPointLS (position p) seg -. position p) < sqRadius p
+  squareDistanceLS (position p) seg < sqRadius p
 
 collideLS :: (Ord a, Fractional a) => Particle a -> LineSegment a -> Particle a
 collideLS p seg | particleHitsLS p seg =
